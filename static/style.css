@@ -1,0 +1,23 @@
+.header {
+    
+}
+
+.col-md-10 h1 {
+    text-align: center;
+    margin-top: 70px;
+}
+
+#source {
+    width: 100%;
+    margin-top: 50px;
+}
+
+#post {
+    width: 50px;
+    height: 25px;
+    float: right;
+}
+
+.quill-toolbar {
+    margin-top: 50px;
+}

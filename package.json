@@ -1,0 +1,34 @@
+{
+  "name": "ipfsite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "bundle": "browserify src/index.js > src/bundle.js",
+    "start": "python -m http.server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ipfs": "^0.25.4",
+    "ipfs-api": "^14.3.5",
+    "pouchdb": "^6.3.4"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.18.13",
+    "browserify": "^14.4.0",
+    "concat-stream": "^1.6.0",
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.3.2",
+    "gulp-connect": "^5.0.0",
+    "gulp-nodemon": "^2.2.1",
+    "gulp-run": "^1.7.1",
+    "gulp-uglify": "^3.0.0",
+    "gulp-util": "^3.0.8",
+    "http-server": "^0.10.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "vinyl-transform": "^1.0.0",
+    "webpack-stream": "^4.0.0"
+  }
+}
