@@ -2,8 +2,9 @@ const concat = require("concat-stream");
 const Buffer = require("safe-buffer").Buffer;
 var IPFS = require("ipfs-api");
 const pouch = require("pouchdb");
+const $ = require('jquery')
 
-var db = new pouch("ipfs_test");
+var db = new pouch("ipfs_test3");
 
 var ipfs = IPFS("localhost", "5001", {
 	protocol: "http"
@@ -24,9 +25,14 @@ var toolbarOptions = [
 ];
 
 function addToIPFS() {
-	var text = editor.getContents();
-	console.log(text);
-	ipfs.files.add(Buffer.from(text), (err, files) => {
+	var text = editor.getContents()
+	var title = $('#title').val()
+	console.log(title)
+	var article = {
+		title: title,
+		text: text
+	}
+	ipfs.files.add(Buffer.from(JSON.stringify(article)), (err, files) => {
 		var hash = {
 			_id: new Date().toISOString(),
 			hash: files[0].hash

@@ -34,7 +34,7 @@ gulp.task("bundle_list", () => {
 });
 
 gulp.task("watch-public", function() {
-	gulp.watch(["index.html", "src/index.js", "src/list.js"], ["bundle_index", "bundle_list"]);
+	gulp.watch(["static/*.css", "src/index.js", "src/list.js"], ["bundle_index", "bundle_list"]);
 });
 
 gulp.task("server", () => {

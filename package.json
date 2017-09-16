@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bl": "^1.2.1",
     "ipfs": "^0.25.4",
     "ipfs-api": "^14.3.5",
+    "jquery": "^3.2.1",
     "pouchdb": "^6.3.4"
   },
   "devDependencies": {

@@ -1,6 +1,9 @@
 const pouch = require("pouchdb");
 const IPFS = require("ipfs-api");
-const db = pouch("ipfs_test");
+const db = pouch("ipfs_test3");
+const concat = require("concat-stream");
+const Buffer = require("safe-buffer").Buffer;
+const $ = require("jquery");
 
 const ipfs = IPFS("localhost", "5001", {
 	protocol: "http"
@@ -15,7 +18,21 @@ function articleList() {
 			for (var doc in d) {
 				if (doc == "doc") {
 					ipfs.files.cat(d[doc].hash, (err, file) => {
-						editor.setContents(file);
+						if (err) {
+							console.log(err);
+						}
+						file.pipe(
+							concat(data => {
+								let post = JSON.parse(data);
+								let name = "quill" + row;
+								$('.something').append(`<div class="post">
+									<h4>${post.title}</h4>
+									<div id="${name}"></div>
+								</div>`)
+								let q = new Quill("#" + name, {});
+								q.setContents(post.text);
+							})
+						);
 					});
 				}
 			}
@@ -24,13 +41,5 @@ function articleList() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-	editor = new Quill("#quill", {
-		debug: "info",
-		modules: {
-			toolbar: false
-		},
-		readOnly: true,
-		theme: "snow"
-	});
 	articleList();
 });
