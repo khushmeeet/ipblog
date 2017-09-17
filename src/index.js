@@ -1,16 +1,19 @@
 const concat = require("concat-stream");
 const Buffer = require("safe-buffer").Buffer;
 var IPFS = require("ipfs-api");
-const pouch = require("pouchdb");
-const $ = require('jquery')
-
-var db = new pouch("ipfs_test3");
+const $ = require("jquery");
+const orbitDB = require("orbit-db")
+const pouchdb = require('pouchdb')
+const fs = require('fs')
 
 var ipfs = IPFS("localhost", "5001", {
 	protocol: "http"
 });
 
+const db = pouchdb("ipfs-test3")
+
 var editor;
+
 var toolbarOptions = [
 	[{ header: [1, 2, 3, 4, 5, 6, false] }],
 	[{ font: [] }],
@@ -25,30 +28,30 @@ var toolbarOptions = [
 ];
 
 function addToIPFS() {
-	var text = editor.getContents()
-	var title = $('#title').val()
-	console.log(title)
+	var text = editor.getContents();
+	var title = $("#title").val();
 	var article = {
 		title: title,
 		text: text
-	}
+	};
 	ipfs.files.add(Buffer.from(JSON.stringify(article)), (err, files) => {
+		$(".hash-ref").append(`<p class="hash-ref">Document uploaded to IPFS! -
+			<span>${files[0].hash}</span> </p>`);
 		var hash = {
-			_id: new Date().toISOString(),
 			hash: files[0].hash
 		};
-		db.put(hash, (err, res) => {
-			if (err) {
-				console.log(err);
-			}
+		fs.writeFile("hash.txt",`${files[0].hash}`, err => {
+			if (err) throw err;
+			console.log("The file has been saved!");
 		});
+		db.put(hash, (err, res) => {
+			console.log('successful put');
+		})
 	});
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-	document.getElementById("post").onclick = addToIPFS;
 	editor = new Quill("#quill", {
-		debug: "info",
 		modules: {
 			toolbar: toolbarOptions
 		},
@@ -56,4 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		readOnly: false,
 		theme: "snow"
 	});
+	document.getElementById("post").onclick = addToIPFS;
+	
 });

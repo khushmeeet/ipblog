@@ -9,8 +9,6 @@
 }
 
 #post {
-    width: 50px;
-    height: 25px;
     float: right;
 }
 
@@ -19,5 +17,7 @@
 }
 
 .post {
-    border: 2px solid blue;
+    text-align: center;
+    border: 2px solid grey;
+    margin: 10px;
 }
