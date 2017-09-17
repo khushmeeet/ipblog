@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "bl": "^1.2.1",
+    "browserify-fs": "^1.0.0",
+    "firebase": "^4.3.1",
     "gun": "^0.8.5",
     "ipfs": "^0.25.4",
     "ipfs-api": "^14.3.5",
@@ -21,6 +23,7 @@
     "mongoose": "^4.11.11",
     "orbit-db": "^0.17.3",
     "pouchdb": "^6.3.4",
+    "pouchdb-full-sync": "^1.0.5",
     "tevere": "^0.2.1"
   },
   "devDependencies": {
