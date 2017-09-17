@@ -5,7 +5,8 @@ const $ = require("jquery");
 const orbitDB = require("orbit-db");
 const pouchdb = require("pouchdb");
 const fs = require("browserify-fs");
-const firebase = require('firebase')
+const firebase = require("firebase");
+const itob = require("image-to-blob");
 
 var config = {
 	apiKey: "AIzaSyA2_gXBNPnMbSwJjzMSduZhvY9T47h8sUU",
@@ -38,27 +39,123 @@ var toolbarOptions = [
 	[{ indent: "+1" }, { indent: "-1" }],
 	[{ script: "sub" }, { script: "super" }]
 ];
-var hashfile;
+
+makeblob = function(dataURL) {
+	var BASE64_MARKER = ";base64,";
+	if (dataURL.indexOf(BASE64_MARKER) == -1) {
+		var parts = dataURL.split(",");
+		var contentType = parts[0].split(":")[1];
+		var raw = decodeURIComponent(parts[1]);
+		return new Blob([raw], { type: contentType });
+	}
+	var parts = dataURL.split(BASE64_MARKER);
+	var contentType = parts[0].split(":")[1];
+	var raw = window.atob(parts[1]);
+	var rawLength = raw.length;
+
+	var uInt8Array = new Uint8Array(rawLength);
+
+	for (var i = 0; i < rawLength; ++i) {
+		uInt8Array[i] = raw.charCodeAt(i);
+	}
+	return new Blob([uInt8Array], { type: contentType });
+};
+
+var subscriptionKey = "929960c9586b4b38be7b9c82b521a21e";
+
+var uriBase =
+	"https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/analyze";
+
+// Request parameters.
+var params = {
+	visualFeatures: "Categories,Description,Color,Adult"
+};
+
 function addToIPFS() {
-	var text = editor.getContents();
-	var title = $("#title").val();
-	var article = {
-		title: title,
-		text: text
-	};
-	var hashfile;
-	ipfs.files.add(Buffer.from(JSON.stringify(article)), (err, files) => {
-		$(".hash-ref").append(`<p class="hash-ref">Document uploaded to IPFS! -
+	var isAdult = false;
+	var imgs = $(".ql-editor").find("img");
+	if (imgs.length) {
+		console.log(imgs);
+		var attr = imgs.attr("src");
+		var blob = makeblob(attr);
+
+		$.ajax({
+			url: uriBase + "?" + $.param(params),
+
+			// Request headers.
+			beforeSend: function(xhrObj) {
+				xhrObj.setRequestHeader(
+					"Content-Type",
+					"application/octet-stream"
+				);
+				xhrObj.setRequestHeader(
+					"Ocp-Apim-Subscription-Key",
+					subscriptionKey
+				);
+			},
+			type: "POST",
+			processData: false,
+			// Request body.
+			data: blob
+		})
+			.done(function(data) {
+				console.log(data);
+				isAdult = data.adult.isAdultContent;
+				console.log(isAdult);
+				if (isAdult == false) {
+					console.log("img");
+					console.log(isAdult);
+					var text = editor.getContents();
+					var title = $("#title").val();
+					var article = { title: title, text: text };
+					var hashfile;
+					ipfs.files.add(
+						Buffer.from(JSON.stringify(article)),
+						(err, files) => {
+							$(".hash-ref")
+								.append(`<p class="hash-ref">Document uploaded to IPFS! -
 			<span>${files[0].hash}</span> </p>`);
-		var hash = {
-			_id: new Date().toISOString(),
-			hash: files[0].hash
-		};
-		database.child("hashes").push(files[0].hash);
-		db.put(hash, (err, res) => {
-			console.log("successful put");
-		});
-	});
+							var hash = {
+								_id: new Date().toISOString(),
+								hash: files[0].hash
+							};
+							database.child("hashes").push(files[0].hash);
+							db.put(hash, (err, res) => {
+								console.log("successful put");
+							});
+						}
+					);
+				} else {
+					$(".hash-ref").append(`<p>Adult content restricted!</p>`);
+				}
+			})
+			.fail(function(data) {
+				console.log(data);
+			});
+	} else {
+		console.log("text");
+		console.log(isAdult);
+		var text = editor.getContents();
+		var title = $("#title").val();
+		var article = { title: title, text: text };
+		var hashfile;
+		ipfs.files.add(
+			Buffer.from(JSON.stringify(article)),
+			(err, files) => {
+				$(".hash-ref")
+					.append(`<p class="hash-ref">Document uploaded to IPFS! -
+			<span>${files[0].hash}</span> </p>`);
+				var hash = {
+					_id: new Date().toISOString(),
+					hash: files[0].hash
+				};
+				database.child("hashes").push(files[0].hash);
+				db.put(hash, (err, res) => {
+					console.log("successful put");
+				});
+			}
+		);
+	}
 }
 
 document.addEventListener("DOMContentLoaded", () => {

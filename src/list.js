@@ -15,9 +15,9 @@ var config = {
 	messagingSenderId: "918913223449"
 };
 firebase.initializeApp(config);
-var database = firebase.database().ref()
+var database = firebase.database().ref();
 
-const ipfs = IPFS("localhost", "5001", {
+var ipfs = IPFS("localhost", "5001", {
 	protocol: "http"
 });
 
@@ -36,7 +36,7 @@ function articleList() {
 								let post = JSON.parse(data);
 								let name = "quill" + Date.now().toString();
 								$(".something").append(`<div class="post">
-									<h4>${post.title}</h4>
+									<h2>${post.title}</h2>
 									<div id="${name}"></div>
 								</div>`);
 								let q = new Quill("#" + name, {});

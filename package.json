@@ -14,6 +14,7 @@
     "browserify-fs": "^1.0.0",
     "firebase": "^4.3.1",
     "gun": "^0.8.5",
+    "image-to-blob": "^0.2.0",
     "ipfs": "^0.25.4",
     "ipfs-api": "^14.3.5",
     "ipfs-daemon": "^0.3.1",
